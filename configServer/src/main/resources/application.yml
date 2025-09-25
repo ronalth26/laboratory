@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: configServer
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Frank18ci/configRepoGestionCreditosBancarios
+server:
+  port: 8888
+

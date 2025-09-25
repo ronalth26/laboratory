@@ -1,0 +1,8 @@
+.env
+
+.idea
+
+# Otros
+*.log
+
+.idea/workspace.xml
