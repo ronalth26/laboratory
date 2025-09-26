@@ -1,10 +1,10 @@
 package com.laboratory.userservice.service;
 
-import com.laboratory.user.service.model.Role;
-import com.laboratory.user.service.model.RoleName;
-import com.laboratory.user.service.model.User;
-import com.laboratory.user.service.repository.RoleRepository;
-import com.laboratory.user.service.repository.UserRepository;
+import com.laboratory.userservice.model.Role;
+import com.laboratory.userservice.model.RoleName;
+import com.laboratory.userservice.model.User;
+import com.laboratory.userservice.repository.RoleRepository;
+import com.laboratory.userservice.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

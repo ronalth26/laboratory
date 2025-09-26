@@ -1,14 +1,15 @@
 package com.laboratory.userservice.controller;
 
-import com.laboratory.user.service.model.RoleName;
-import com.laboratory.user.service.model.User;
-import com.laboratory.user.service.service.UserService;
+import com.laboratory.userservice.model.RoleName;
+import com.laboratory.userservice.model.User;
+import com.laboratory.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")

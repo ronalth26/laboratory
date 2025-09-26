@@ -1,10 +1,12 @@
 package com.laboratory.userservice.config;
 
-import com.laboratory.user.service.model.Role;
-import com.laboratory.user.service.model.RoleName;
-import com.laboratory.user.service.model.User;
-import com.laboratory.user.service.repository.RoleRepository;
-import com.laboratory.user.service.repository.UserRepository;
+import com.laboratory.userservice.model.Role;
+import com.laboratory.userservice.model.RoleName;
+import com.laboratory.userservice.model.User;
+import com.laboratory.userservice.model.Permission;
+import com.laboratory.userservice.repository.RoleRepository;
+import com.laboratory.userservice.repository.UserRepository;
+import com.laboratory.userservice.repository.PermissionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -22,11 +24,16 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PermissionRepository permissionRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -37,14 +44,19 @@ public class DataInitializer implements CommandLineRunner {
         // Crear roles si no existen
         initializeRoles();
 
-        // Crear usuarios de prueba si no existen
+        // Crear permisos base
+        initializePermissions();
+
+        // Asignar permisos a roles
+        assignPermissionsToRoles();
+
+        // Crear usuarios de prueba
         initializeUsers();
 
         logger.info("Datos de prueba inicializados correctamente!");
     }
 
     private void initializeRoles() {
-        // Lista de roles del sistema
         Arrays.stream(RoleName.values()).forEach(roleName -> {
             if (!roleRepository.findByName(roleName).isPresent()) {
                 Role role = new Role();
@@ -54,6 +66,66 @@ public class DataInitializer implements CommandLineRunner {
                 logger.info("Rol creado: {}", roleName);
             }
         });
+    }
+
+    private void initializePermissions() {
+        String[][] basePermissions = {
+                {"USER_VIEW", "Puede ver usuarios"},
+                {"USER_EDIT", "Puede editar usuarios"},
+                {"USER_DELETE", "Puede eliminar usuarios"},
+                {"REPORTS_ACCESS", "Puede acceder a los reportes"},
+                {"MODULE_LAB_ACCESS", "Puede acceder al módulo de laboratorio"},
+                {"BUTTON_EXPORT", "Puede usar el botón de exportar datos"}
+        };
+
+        for (String[] perm : basePermissions) {
+            String name = perm[0];
+            String description = perm[1];
+
+            permissionRepository.findByName(name).orElseGet(() -> {
+                Permission p = new Permission();
+                p.setName(name);
+                p.setDescription(description);
+                logger.info("Permiso creado: {}", name);
+                return permissionRepository.save(p);
+            });
+        }
+    }
+
+    private void assignPermissionsToRoles() {
+        // ADMIN tiene todos los permisos
+        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
+        adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
+        roleRepository.save(adminRole);
+
+        // TÉCNICO: acceso laboratorio + reportes
+        Role tecnicoRole = roleRepository.findByName(RoleName.ROLE_TECHNICIAN).get();
+        Set<Permission> tecnicoPerms = new HashSet<>();
+        tecnicoPerms.add(permissionRepository.findByName("MODULE_LAB_ACCESS").get());
+        tecnicoPerms.add(permissionRepository.findByName("REPORTS_ACCESS").get());
+        tecnicoRole.setPermissions(tecnicoPerms);
+        roleRepository.save(tecnicoRole);
+
+        // SUPERVISOR: reportes + edición de usuarios
+        Role supervisorRole = roleRepository.findByName(RoleName.ROLE_SUPERVISOR).get();
+        Set<Permission> supervisorPerms = new HashSet<>();
+        supervisorPerms.add(permissionRepository.findByName("USER_VIEW").get());
+        supervisorPerms.add(permissionRepository.findByName("USER_EDIT").get());
+        supervisorPerms.add(permissionRepository.findByName("REPORTS_ACCESS").get());
+        supervisorRole.setPermissions(supervisorPerms);
+        roleRepository.save(supervisorRole);
+
+        // VIEWER: solo puede ver usuarios
+        Role viewerRole = roleRepository.findByName(RoleName.ROLE_VIEWER).get();
+        Set<Permission> viewerPerms = new HashSet<>();
+        viewerPerms.add(permissionRepository.findByName("USER_VIEW").get());
+        viewerRole.setPermissions(viewerPerms);
+        roleRepository.save(viewerRole);
+
+        // USER: sin permisos especiales
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER).get();
+        userRole.setPermissions(new HashSet<>());
+        roleRepository.save(userRole);
     }
 
     private void initializeUsers() {
@@ -115,7 +187,7 @@ public class DataInitializer implements CommandLineRunner {
             logger.info("Usuario supervisor creado: supervisor / super123");
         }
 
-        // Usuario VIEWER (solo lectura)
+        // Usuario VIEWER
         if (!userRepository.findByUsername("viewer").isPresent()) {
             User viewer = new User();
             viewer.setUsername("viewer");

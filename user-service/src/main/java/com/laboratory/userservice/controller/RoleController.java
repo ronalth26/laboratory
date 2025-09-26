@@ -1,8 +1,8 @@
 package com.laboratory.userservice.controller;
 
-import com.laboratory.user.service.model.Role;
-import com.laboratory.user.service.model.RoleName;
-import com.laboratory.user.service.repository.RoleRepository;
+import com.laboratory.userservice.model.Role;
+import com.laboratory.userservice.model.RoleName;
+import com.laboratory.userservice.repository.RoleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

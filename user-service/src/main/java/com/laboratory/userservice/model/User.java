@@ -1,8 +1,8 @@
 package com.laboratory.userservice.model;
 
-import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")

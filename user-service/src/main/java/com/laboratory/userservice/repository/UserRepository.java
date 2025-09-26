@@ -1,6 +1,6 @@
 package com.laboratory.userservice.repository;
 
-import com.laboratory.user.service.model.User;
+import com.laboratory.userservice.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

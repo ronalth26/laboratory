@@ -1,7 +1,7 @@
 package com.laboratory.userservice.controller;
 
-import com.laboratory.user.service.model.User;
-import com.laboratory.user.service.service.UserService;
+import com.laboratory.userservice.model.User;
+import com.laboratory.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

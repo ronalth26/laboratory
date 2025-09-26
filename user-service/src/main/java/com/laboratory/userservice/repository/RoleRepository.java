@@ -1,7 +1,7 @@
 package com.laboratory.userservice.repository;
 
-import com.laboratory.user.service.model.Role;
-import com.laboratory.user.service.model.RoleName;
+import com.laboratory.userservice.model.Role;
+import com.laboratory.userservice.model.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
